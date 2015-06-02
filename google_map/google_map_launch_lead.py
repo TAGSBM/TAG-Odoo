@@ -18,24 +18,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from openerp.osv import osv
 
+class launch_map(osv.osv):
 
-{
-    'name': 'Google Maps',
-    'version': '1.0',
-    'category': 'Customer Relationship Management',
-    'description': """This module adds a Map button on the partner’s form in order to open its address directly in the Google Maps view""",
-    'author': 'BHC & OpenERP',
-    'website': 'www.bhc.be',
-    'depends': ['base'],
-    'init_xml': [],
-    'images': ['images/google_map.png','images/map.png','images/earth.png'],
-    'update_xml': [
-                   'google_map_view.xml',
-                   'google_map_view_lead.xml',
-                  ],
-    'demo_xml': [],
-    'installable': True,
-    'auto_install': False,
-}
+    _inherit = "crm.lead"
+
+    def open_map2(self, cr, uid, ids, context=None):
+        address_obj= self.pool.get('crm.lead')
+        partner = address_obj.browse(cr, uid, ids, context=context)[0]
+        url="http://maps.google.com/maps?oi=map&q="
+        if partner.street:
+            url+=partner.street.replace(' ','+')
+        if partner.city:
+            url+='+'+partner.city.replace(' ','+')
+        if partner.state_id:
+            url+='+'+partner.state_id.name.replace(' ','+')
+        if partner.country_id:
+            url+='+'+partner.country_id.name.replace(' ','+')
+        if partner.zip:
+            url+='+'+partner.zip.replace(' ','+')
+        return {
+        'type': 'ir.actions.act_url',
+        'url':url,
+        'target': 'new'
+        }
+
+launch_map()
+
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+
