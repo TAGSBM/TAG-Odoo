@@ -20,11 +20,11 @@
 ##############################################################################
 from openerp.osv import osv
 
-class launch_map(osv.osv):
+class launch_map1(osv.osv):
 
     _inherit = "res.partner"
 
-    def open_map(self, cr, uid, ids, context=None):
+    def open_map1(self, cr, uid, ids, context=None):
         address_obj= self.pool.get('res.partner')
         partner = address_obj.browse(cr, uid, ids, context=context)[0]
         url="http://maps.google.com/maps?oi=map&q="
@@ -44,7 +44,7 @@ class launch_map(osv.osv):
         'target': 'new'
         }
 
-launch_map()
+launch_map1()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 

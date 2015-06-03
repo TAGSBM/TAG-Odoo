@@ -20,7 +20,7 @@
 ##############################################################################
 from openerp.osv import osv
 
-class launch_map(osv.osv):
+class launch_map2(osv.osv):
 
     _inherit = "crm.lead"
 
@@ -44,7 +44,7 @@ class launch_map(osv.osv):
         'target': 'new'
         }
 
-launch_map()
+launch_map2()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
 
