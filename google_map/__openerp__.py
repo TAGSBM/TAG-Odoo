@@ -27,7 +27,7 @@
     'description': """This module adds a Map button on the partner’s and leads form in order to open its address directly in the Google Maps view""",
     'author': 'BHC & OpenERP & TAGs Small Business Community',
     'website': 'www.smallbiz.community',
-    'depends': ['base'],
+    'depends': ['base','crm'],
     'init_xml': [],
     'images': ['images/google_map.png','images/map.png','images/earth.png'],
     'update_xml': [
