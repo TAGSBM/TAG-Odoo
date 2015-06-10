@@ -114,6 +114,10 @@
 		    <field name="name">TAG Support Forum</field>
 		    <field name="url">http://www.smallbiz.community/forum/help-1</field>
 		</record>
+		<record model="ir.actions.act_url" id="tag_online_help">
+		    <field name="name">TAG Online Traininfg</field>
+		    <field name="url">http://www.smallbiz.community/page/system-training</field>
+		</record>
 	<!-- Menu Items, by not having a parent adds to the top of screen Menu Bar -->  
         <menuitem id="tag_help00" name="TAG Help" sequence="120"/>
 		<menuitem id="tag_help01" name="Support Type" parent="tag_help00" action="action_tag_help" sequence="00"/>
@@ -141,5 +145,6 @@
 		<menuitem id="tag_help06e" name="Odoo Apps" parent="tag_help06a" action="odoo_apps_url" sequence = "630"/>
 		<menuitem id="tag_help06f" name="Odoo Tech Manual" parent="tag_help06a" action="odoo_techdev_url" sequence = "640"/>
 		<menuitem id="tag_help06g" name="Odoo Forum" parent="tag_help06a" action="tagodoo_forum_url" sequence = "650"/>
+		<menuitem id="tag_help06h" name="Tag Online Training" parent="tag_help06a" action="tag_online_help" sequence = "660"/>
 	</data>
 </openerp>
