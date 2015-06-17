@@ -37,7 +37,7 @@
 									<field name="phone"/>
 										<field name="mobile"/>
 											<field name="fax"/>
-												<field name="TagCust29"/>
+												
                                     <label for="street" string="Address"/>
                                     <div>
                                  <field name="street" placeholder="Street..."/>
@@ -58,15 +58,15 @@
                                     <field name="date_action" nolabel="1"/> <label string="-" attrs="{'invisible': ['|', ('date_action', '=', False), ('title_action', '=', False)]}"/>
                                     <field name="title_action" class="oe_inline" nolabel="1" placeholder="e.g. Call for proposal"/>
                                 </div>
-                                <field name="date_deadline"/>
+                                
 <field name="user_id" on_change="on_change_user(user_id, context)" context="{'default_groups_ref': ['base.group_user', 'base.group_partner_manager', 'base.group_sale_salesman_all_leads']}"/>
                                 <label for="section_id" groups="base.group_multi_salesteams"/>
                                 <div groups="base.group_multi_salesteams">
                                 <field name="section_id" widget="selection"/>
-                                <button name="case_escalate" string="Escalate" type="object" class="oe_link" attrs="{'invisible': ['|', ('section_id','=',False), ('probability', '=', 100)]}"/>    
+                                <button name="case_escalate" string="Escalate" type="object" class="oe_link" attrs="{'invisible': ['|', ('section_id','=',False), ('probability', '=', 100)]}" invisible="1"/>    
                                 </div>
 <field name="priority" widget="priority"/>
-                            <field name="categ_ids" widget="many2many_tags" domain="[('object_id.model','=','crm.lead')]" context="{'object_name': 'crm.lead'}"/>
+                            <field name="categ_ids" widget="many2many_tags" domain="[('object_id.model','=','crm.lead')]" context="{'object_name': 'crm.lead'}" string="Product Type"/>
                             </group>
                             </group>
                         <notebook colspan="4">

@@ -10,6 +10,8 @@
                             <div>Schedule/Log<br/>Calls</div>
                         </button>
                     </div>
+<h4><label for="contact_name"/></h4>
+                                        <h2><field name="contact_name" class="oe_inline"/></h2>
                     <div class="oe_title">
                         <label for="name" class="oe_edit_only"/>
                         <h1><field name="name" placeholder="Describe the lead..."/></h1>
@@ -32,11 +34,15 @@
                             </div>
                         </group>
                         <group>
-                            <label for="contact_name"/>
-                            <div>
-                                <field name="contact_name" class="oe_inline"/><span attrs="{'invisible': [('title', '=', '')]}">, </span>
-                                <field name="title" placeholder="Title" domain="[('domain', '=', 'contact')]" class="oe_inline" options="{&quot;no_open&quot;: True}"/>
-                            </div>
+
+
+<field name="TagCust12" widget="url" />
+
+                                <label for="title_action"/>
+                                <div>
+                                    <field name="date_action" nolabel="1"/> <label string="-" attrs="{'invisible': ['|', ('date_action', '=', False), ('title_action', '=', False)]}"/>
+                                    <field name="title_action" class="oe_inline" nolabel="1" placeholder="e.g. Call for proposal"/>
+                                </div>
                             <field name="email_from" widget="email"/>
                             <field name="function" string="Job Position"/>
                             <field name="phone"/>
