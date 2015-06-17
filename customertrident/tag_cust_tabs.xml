@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+
+        <record id="base.view_partner_form" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field eval="1" name="priority"/>
+            <field name="arch" type="xml">
+                <form string="Partners">
+                <sheet>
+                    <field name="image" widget='image' class="oe_left oe_avatar" options='{"preview_image": "image_medium", "size": [90, 90]}' invisible="1"/>
+                    <div class="oe_title oe_left" invisible="1">
+                        <div class="oe_edit_only">
+                            <label for="name"/> (
+                            <field name="is_company" on_change="onchange_type(is_company)" class="oe_inline"/> <label for="is_company" string="Is a Company?"/>)
+                        </div>
+                       
+                        <field name="parent_id"
+                            placeholder="Company"
+                            domain="[('is_company', '=', True)]" context="{'default_is_company': True, 'default_supplier': supplier, 'default_customer': customer}"
+                            attrs="{'invisible': [('is_company','=', True),('parent_id', '=', False)]}"
+                            on_change="onchange_address(use_parent_address, parent_id)"/>
+                        <field name="category_id" widget="many2many_tags" placeholder="Tags..."/>
+                    </div>
+                    <div class="oe_right oe_button_box" name="buttons" invisible="1"> </div>
+
+                    <group invisible="1">
+                        <group>
+                            <label for="type" attrs="{'invisible': [('parent_id','=', False)]}"/>
+                            <div attrs="{'invisible': [('parent_id','=', False)]}" name="div_type">
+                                <field class="oe_inline"
+                                    name="type"/>
+                            </div>
+
+                            <label for="street" string="Address"/>
+                            <div>
+                                <div class="oe_edit_only">
+                                    <field name="use_parent_address" class="oe_inline"
+                                           on_change="onchange_address(use_parent_address, parent_id)"
+                                           attrs="{'invisible': ['|', ('is_company', '=', True),('parent_id', '=', False)]}"/>
+                                    <label for="use_parent_address" attrs="{'invisible': ['|', ('is_company', '=', True), ('parent_id', '=', False)]}"/>
+                                </div>
+                                <button name="open_parent" type="object" string="(edit company address)" class="oe_link oe_edit_only"
+                                        attrs="{'invisible': ['|',('parent_id','=', False),('use_parent_address','=',False)]}"/>
+                                <field name="street" placeholder="Street..."  attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                                <field name="street2"  attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                                <div class="address_format">
+                                    <field name="city" placeholder="City" style="width: 40%%" attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                                    <field name="state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}' on_change="onchange_state(state_id)" attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                                    <field name="zip" placeholder="ZIP" style="width: 20%%" attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                                </div>
+                                <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True, "no_create": True}' attrs="{'readonly': [('use_parent_address','=',True)]}"/>
+                            </div>
+                            <field name="website" widget="url" placeholder="e.g. www.odoo.com"/>
+                            <!--<field name="website_n" widget="url" placeholder="e.g. www.odoo.com"/>-->
+                        </group>
+                        <group>
+                            <field name="function" placeholder="e.g. Sales Director"
+                                attrs="{'invisible': [('is_company','=', True)]}"/>
+                            <field name="phone" placeholder="e.g. +32.81.81.37.00"/>
+                            <field name="mobile"/>
+                            <field name="fax"/>
+                            <field name="user_ids" invisible="1"/>
+                            <field name="email" widget="email" attrs="{'required': [('user_ids','!=', [])]}"/>
+                            <field name="title" options='{"no_open": True}'/>
+                        </group>
+                    </group>
+
+                    <notebook colspan="4">
+                        <page string="Contacts" attrs="{'invisible': [('is_company','=',False), ('child_ids', '=', [])]}" autofocus="autofocus">
+                            <field name="child_ids" mode="kanban" context="{'default_parent_id': active_id, 'default_street': street, 'default_street2': street2, 'default_city': city, 'default_state_id': state_id, 'default_zip': zip, 'default_country_id': country_id, 'default_supplier': supplier, 'default_customer': customer, 'default_use_parent_address': True}">
+                                <kanban>
+                                    <field name="color"/>
+                                    <field name="name"/>
+                                    <field name="title"/>
+                                    <field name="email"/>
+                                    <field name="parent_id"/>
+                                    <field name="is_company"/>
+                                    <field name="function"/>
+                                    <field name="phone"/>
+                                    <field name="street"/>
+                                    <field name="street2"/>
+                                    <field name="zip"/>
+                                    <field name="city"/>
+                                    <field name="country_id"/>
+                                    <field name="mobile"/>
+                                    <field name="fax"/>
+                                    <field name="state_id"/>
+                                    <field name="has_image"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <t t-set="color" t-value="kanban_color(record.color.raw_value)"/>
+                                            <div t-att-class="color + (record.title.raw_value == 1 ? ' oe_kanban_color_alert' : '')" style="position: relative">
+                                                <a t-if="! read_only_mode" type="delete" style="position: absolute; right: 0; padding: 4px; diplay: inline-block">X</a>
+                                                <div class="oe_module_vignette">
+                                                <a type="open">
+                                                    <t t-if="record.has_image.raw_value === true">
+                                                        <img t-att-src="kanban_image('res.partner', 'image_small', record.id.value)" class="oe_avatar oe_kanban_avatar_smallbox"/>
+                                                    </t>
+                                                    <t t-if="record.image and record.image.raw_value !== false">
+                                                        <img t-att-src="'data:image/png;base64,'+record.image.raw_value" class="oe_avatar oe_kanban_avatar_smallbox"/>
+                                                    </t>
+                                                    <t t-if="record.has_image.raw_value === false and (!record.image or record.image.raw_value === false)">
+                                                        <t t-if="record.is_company.raw_value === true">
+                                                            <img t-att-src='_s + "/base/static/src/img/company_image.png"' class="oe_kanban_image oe_kanban_avatar_smallbox"/>
+                                                        </t>
+                                                        <t t-if="record.is_company.raw_value === false">
+                                                            <img t-att-src='_s + "/base/static/src/img/avatar.png"' class="oe_kanban_image oe_kanban_avatar_smallbox"/>
+                                                        </t>
+                                                    </t>
+                                                </a>
+                                                    <div class="oe_module_desc">
+                                                        <div class="oe_kanban_box_content oe_kanban_color_bglight oe_kanban_color_border">
+                                                            <table class="oe_kanban_table">
+                                                                <tr>
+                                                                    <td class="oe_kanban_title1" align="left" valign="middle">
+                                                                        <h4><a type="open"><field name="name"/></a></h4>
+                                                                        <i><div t-if="record.function.raw_value">
+                                                                            <field name="function"/></div></i>
+                                                                        <div><a t-if="record.email.raw_value" title="Mail" t-att-href="'mailto:'+record.email.value">
+                                                                            <field name="email"/>
+                                                                        </a></div>
+                                                                        <div t-if="record.phone.raw_value">Phone: <field name="phone"/></div>
+                                                                        <div t-if="record.mobile.raw_value">Mobile: <field name="mobile"/></div>
+                                                                        <div t-if="record.fax.raw_value">Fax: <field name="fax"/></div>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                                <form string="Contact">
+                                    <sheet>
+                                        <field name="image" widget='image' class="oe_avatar oe_left" options='{"preview_image": "image_medium"}'/>
+                                        <div class="oe_title">
+                                            <label for="name" class="oe_edit_only"/>
+
+                                            <field name="category_id" widget="many2many_tags" placeholder="Tags..." style="width: 70%%"/>
+                                        </div>
+                                        <group>
+                                            <field name="function" placeholder="e.g. Sales Director"/>
+                                            <field name="email"/>
+                                            <field name="phone"/>
+                                            <field name="mobile"/>
+                                        </group>
+                                        <div>
+                                            <field name="use_parent_address"/><label for="use_parent_address"/>
+                                        </div>
+                                        <group>
+                                            <label for="type"/>
+                                            <div name="div_type">
+                                                <field class="oe_inline" name="type"/>
+                                            </div>
+                                            <label for="street" string="Address" attrs="{'invisible': [('use_parent_address','=', True)]}"/>
+                                            <div attrs="{'invisible': [('use_parent_address','=', True)]}" name="div_address">
+                                                <field name="street" placeholder="Street..."/>
+                                                <field name="street2"/>
+                                                <div class="address_format">
+                                                    <field name="city" placeholder="City" style="width: 40%%"/>
+                                                    <field name="state_id" class="oe_no_button" placeholder="State" style="width: 37%%" options='{"no_open": True}' on_change="onchange_state(state_id)"/>
+                                                    <field name="zip" placeholder="ZIP" style="width: 20%%"/>
+                                                </div>
+                                                <field name="country_id" placeholder="Country" class="oe_no_button" options='{"no_open": True, "no_create": True}'/>
+                                            </div>
+                                        </group>
+                                        <field name="supplier" invisible="True"/>
+                                        <field name="customer" invisible="True"/>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </page>
+                        <page name='internal_notes' string="Internal Notes">
+                            <field name="comment" placeholder="Put an internal note..."/>
+                        </page>
+                        <page name='sales_purchases' string="Sales &amp; Purchases">
+                            <group>
+                                <group>
+                                    <field name="user_id" 
+                                        context="{'default_groups_ref': ['base.group_partner_manager']}"/>
+                                    <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                                </group>
+                                <group>
+                                    <field name="customer"/>
+                                    <field name="supplier"/>
+                                </group>
+                                <group>
+                                    <field name="ref"/>
+                                    <field name="lang"/>
+                                    <field name="date"/>
+                                </group>
+                                <group>
+                                    <field name="active"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="tag_partner">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form" />
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet/field[@name='image']" position="before">
+                    <div class="oe_right oe_button_box" name="buttons"> </div>
+                    <div>
+                        <h4><label for="contact_name"/></h4>
+                        <h2><field name="contact_name" class="oe_inline"/></h2>
+                        <field name="title" placeholder="Title" domain="[('domain', '=', 'contact')]" options="{&quot;no_open&quot;: True}" class="oe_inline" invisible="1"/>
+                        <field name="company_currency" invisible="1"/>
+                        <field name="planned_revenue" class="oe_inline" widget="monetary" options="{'currency_field': 'company_currency'}" invisible="1"/>
+                        <h4><label for="vehicle_name" invisible="1"/></h4>
+                        <h2><field name="vehicle_name" class="oe_inline" invisible="1"/></h2>
+                        <h4><label for="vehicle_name"/></h4>
+                        <h2><field name="vehicle_name_n" class="oe_inline"/></h2>
+                    </div>
+                    <span class="oe_grey"> </span>
+                    <field name="probability" class="oe_inline" widget="integer" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="name" string="Company Name" />
+
+                            <field name="parent_id" placeholder="Company" domain="[('is_company', '=', True)]" context="{'default_is_company': True, 'default_supplier': supplier, 'default_customer': customer}" on_change="onchange_address(use_parent_address, parent_id)"/>
+                            <field name="email" string="Email" widget="email" invisible="1"/>
+                            <field name="email_form" string="Email" widget="email"/>
+                            <field name="phone" invisible="1"/>
+                            <field name="phone_num"/>
+                            <field name="mobile" invisible="1"/>
+                            <field name="mobile_num"/>
+                            <field name="fax" invisible="1"/>
+                            <field name="fax_num"/>
+                            <field name="industry"/>
+                            <field name="TagCust29"/>
+                            <label for="street" string="Address"/>
+                            <div>
+                                <field name="street" placeholder="Street..." invisible="1"/>
+                                <field name="street_n" placeholder="Street..."/>
+                                <field name="street2" invisible="1"/>
+                                <field name="street2_n"/>
+                                <div class="address_format">
+                                    <field name="city" placeholder="City" style="width: 40%" invisible="1"/>
+                                    <field name="city_n" placeholder="City" style="width: 40%"/>
+                                    <field name="state_id" options="{&quot;no_open&quot;: True}" on_change="onchange_state(state_id)" placeholder="State" style="width: 24%" invisible="1"/>
+                                    <field name="state_id_n" options="{&quot;no_open&quot;: True}" on_change="onchange_state(state_id)" placeholder="State" style="width: 24%"/>
+                                    <field name="zip" placeholder="ZIP" style="width: 34%" invisible="1"/>
+                                    <field name="zip_n" placeholder="ZIP" style="width: 34%"/>
+                                </div>
+                                <field name="country_id" placeholder="Country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" invisible="1"/>
+                                <field name="country_id_n" placeholder="Country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                
+                            </div>
+                        </group>
+                        <group> 
+                            <field name="TagCust12" widget="url"/>
+
+                            <label for="title_action"/>
+                            <div>
+                                <field name="date_action" nolabel="1"/> <label string="-" attrs="{'invisible': ['|', ('date_action', '=', False), ('title_action', '=', False)]}"/>
+                                <field name="title_action" class="oe_inline" nolabel="1" placeholder="e.g. Call for proposal"/>
+                            </div>
+                            <field name="date_deadline"/>
+                            <field name="user_id"/>
+                            <field name="user_id_n"/>
+                            <field name="priority" widget="priority"/>
+                            <field name="categ_ids" widget="many2many_tags" domain="[('object_id.model','=','crm.lead')]" context="{'object_name': 'crm.lead'}"/>
+                        </group>
+                    </group>
+                </xpath>
+                <notebook position="inside">
+	            <page string="Client Details">
+	                <group>
+	                    <group>
+						    <field name="TagCust12" />
+						    <field name="TagCust2" />
+						    <field name="TagCust3" />
+						    <field name="TagCust4" />
+						    <field name="TagCust5" />
+	                    </group>
+	                    <group>
+						    <field name="TagCust6" />
+						    <field name="TagCust7" />
+						    <field name="TagCust8" />				
+	                    </group>
+	                </group>
+				    <field name="TagDevNotesFT1" />
+				    <field name="TagDevNotesFT1H" />
+	            </page>
+			    <page string="Directors">
+                            <field name="TagCustList01" context="{'tag_list1_id': active_id}">
+                            <tree string="Blocked Members" editable="top">
+                            <field name="TagList101" />
+						    <field name="TagList102" />
+						    <field name="TagList103" />
+						    <field name="TagList105" />
+						    <field name="TagList104" />	
+						    <field name="TagList106" />							
+                            </tree>
+                        </field>
+					    <field name="TagDevNotesLT1" />
+			    </page>
+                <page string="Purchase">
+	                <group>
+	                    <group>
+						    <field name="TagCust14" />
+						    <field name="TagCust15" />
+						    <field name="TagCust16" />
+						    <field name="TagCust17" />
+						    <field name="TagCust18" />
+						    <field name="TagCust19" />
+						    <field name="TagCust20" />
+						    <field name="TagCust21" />
+					    </group>
+					    <group>
+						    <field name="TagCust22" />
+						    <field name="TagCust23" />
+						    <field name="TagCust24" />
+						    <field name="TagCust25" />
+						    <field name="TagCust26" />
+						    <field name="TagCust27" />
+						    <field name="TagCust31" />
+						    <field name="TagCust32" />
+						    <field name="TagCust28" />
+					    </group>
+				    </group>
+				    <field name="TagCustList02" context="{'tag_list1_id': active_id}">
+                            <tree string="Blocked Members" editable="top">
+
+						    <field name="TagList202" />	
+                            </tree>
+                        </field>
+				    <field name="TagDevNotesFT2" />
+			    </page>
+			    <page string="Trade In">
+		        <group>
+		            <group>
+						    <field name="TagCust34" />
+						    <field name="TagCust35" />
+						    <field name="TagCust36" />
+						    <field name="TagCust37" />
+						    <field name="TagCust38" />
+						    <field name="TagCust39" />
+						    <field name="TagCust40" />
+		        	</group>
+		            <group>
+						    <field name="TagCust41" />
+						    <field name="TagCust42" />
+						    <field name="TagCust43" />
+						    <field name="TagCust44" />
+						    <field name="TagCust45" />
+						    <field name="TagCust47" />
+						    <field name="TagCust48" />
+						    <field name="TagCust46" />
+		        	</group>
+		        </group>
+			    <field name="TagDevNotesFT3" />
+	            </page>
+	            <page string="Dealer Quotes">
+		        <field name="TagCustList03" context="{'tag_list1_id': active_id}">
+                            <tree string="Tree List 3" editable="top">
+                            <field name="TagList301" />
+	                        <field name="TagList302" />
+			        <field name="TagList303" />
+			        <field name="TagList304" />
+			        <field name="TagList305" />
+			        <field name="TagList305a" />
+			        <field name="TagList306" />
+                            </tree>
+                        </field>
+					    <field name="TagDevNotesLT3" />
+	            </page>       
+			    <page string="Assett and Liabilities">
+		        <group>
+		            <group>
+						    <field name="TagCustL1Label" />
+						    <field name="TagCustAL1" />
+						    <field name="TagCustAL2" />
+						    <field name="TagCustAL3" />
+						    <field name="TagCustAL4" />
+						    <field name="TagCustAL5" />
+						    <field name="TagCustAL6" />
+						    <field name="TagCustAL7" />
+						    <field name="TagCustAL8" />
+						    <field name="TagCustAL9" />
+						    <field name="TagCustAL10" />
+						    <field name="TagCustAL11" />
+						    <field name="TagCustAL12" />
+						    <field name="TagCustAL13" />
+						    <field name="TagCustAL14" />
+						    <field name="TagCustAL15" />
+						    <field name="TagCustAL16" />
+		        	</group>	
+		            <group>
+						    <field name="TagCustL1Label2" />
+						    <field name="TagCustAL21" />
+						    <field name="TagCustAL22" />
+						    <field name="TagCustAL23" />
+						    <field name="TagCustAL24" />
+						    <field name="TagCustAL25" />
+						    <field name="TagCustAL26" />
+						    <field name="TagCustAL27" />
+						    <field name="TagCustAL28" />
+						    <field name="TagCustAL29" />
+						    <field name="TagCustAL30" />
+						    <field name="TagCustAL31" />
+						    <field name="TagCustAL32" />
+						    <field name="TagCustAL33" />
+						    <field name="TagCustAL34" />
+						    <field name="TagCustAL35" />
+						    <field name="TagCustAL36" />
+		        	</group>
+		        </group>
+			    <field name="TagDevNotesFT4" />
+	            </page> 
+				    <page string="Accountant">
+					    <field name="TagCustList04" context="{'tag_list4_id': active_id}">
+                            <tree string="Blocked Members" editable="top">
+                            <field name="TagList401" />
+	                        <field name="TagList402" />
+						    <field name="TagList403" />
+						    <field name="TagList404" />
+						    <field name="TagList405" />
+                            </tree>
+                        </field>
+					    <field name="TagDevNotesLT4" />
+				    </page> 
+                <page string="Lender">
+					    <field name="TagCustList05" context="{'tag_list5_id': active_id}">
+                            <tree string="Blocked Members" editable="top">
+						    <field name="TagList507" />
+                            <field name="TagList501" />
+	                        <field name="TagList502" />
+						    <field name="TagList503" />
+						    <field name="TagList504" />
+						    <field name="TagList505" />
+						    <field name="TagList506" />
+						
+                            </tree>
+                        </field>
+					    <field name="TagDevNotesLT5" />
+					    <page string="Upload Data">
+	                <group>
+	                    <group>
+						    <field name="TagCust12" />
+						    <field name="TagCust2" />
+						    <field name="TagCust3" />
+						    <field name="TagCust4" />
+						    <field name="TagCust5" />
+	                    </group>
+	                    <group>
+						    <field name="TagCust6" />
+						    <field name="TagCust7" />
+						    <field name="TagCust8" />				
+	                    </group>
+	                </group>
+				    <field name="TagDevNotesFT1" />
+				    <field name="TagDevNotesFT1H" />
+	            </page>
+				    </page> 
+				
+                </notebook>        
+            </field>
+        </record>
+
+        <record id="res_partner_inherit_form" model="ir.ui.view">
+            <field name="name">res.partner.inherit.form</field>
+            <field name="type">form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml"> 
+                    <xpath expr = "/form/sheet/div/field[@name='category_id']" position="after">
+                    
+                    <div>
+                        <label for="vehicle_name" invisible="1"/>
+                        <field name="vehicle_name" invisible="1"/>
+                        <label for="vehicle_name"/>
+                        <field name="vehicle_name_n"/>
+                        
+                        
+                    </div>
+                       </xpath>
+            </field>
+        </record>
+  </data>
+</openerp>
