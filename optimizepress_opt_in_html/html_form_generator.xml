@@ -9,8 +9,10 @@
                   <sheet>
                       <group>
                           <field name="name"/>
+                          <field name="thank_url" placeholder="http://www.google.com"/>
                           <field name="campaign_id"/>
                           <field name="tag_id"/>
+
                           <field name="fields_ids"/>
                           <field name="output_html"/>
                       </group>

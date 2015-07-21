@@ -2,7 +2,7 @@ import openerp.http as http
 from openerp.http import request, SUPERUSER_ID
 import logging
 _logger = logging.getLogger(__name__)
-
+from openerp.http import werkzeug
 class MyController(http.Controller):
 
 
@@ -30,9 +30,7 @@ class MyController(http.Controller):
         
         request.cr.execute('INSERT INTO crm_lead_category_rel VALUES(' + str(new_lead_id) + ',' + str(rl[0].tag_id.id) + ')')
         
-        return_string = "Thank you for submitting the form"
-        
-        return return_string
+        return werkzeug.utils.redirect(rl[0].thank_url,301)
     
     @http.route('/form/myinsertjson',type="http")
     def some_json(self, **kwargs):

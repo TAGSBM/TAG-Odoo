@@ -48,6 +48,7 @@ class html_gen(models.Model):
     fields_ids = fields.Many2many('ir.model.fields', domain="['|',('ttype','=','char'),'|',('ttype','=','text'),('ttype','=','integer'),('name','!=','create_date'),('name','!=','create_uid'),('name','!=','id'),('name','!=','write_date'),('name','!=','write_uid'),('model_id.model','=','crm.lead')]",string="Form Fields")
     output_html = fields.Text(string='Embed Code')
     tag_id = fields.Many2one('crm.case.categ', readonly=True)
+    thank_url = fields.Char(string='Thank You Page URL')
 
 
 
