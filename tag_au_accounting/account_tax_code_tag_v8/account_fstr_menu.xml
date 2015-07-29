@@ -6,7 +6,7 @@
             id="parent_menu_account_fstr_tax_code"
             name="GST Statement Template"
             parent="account.menu_finance" 
-            sequence="10"/>
+            sequence="8"/>
 
         <menuitem action="action_account_fstr_tax_code_category_form"
             id="menu_account_fstr_tax_code_category_form"
